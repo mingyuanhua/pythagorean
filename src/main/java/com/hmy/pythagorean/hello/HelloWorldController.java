@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloWorldController {
     @GetMapping("/hello")
-    public String sayHello() {
+    public Person sayHello() {
         Faker faker = new Faker();
         String name = faker.name().fullName();
         String company = faker.company().name();
@@ -17,19 +17,6 @@ public class HelloWorldController {
         String bookTitle = faker.book().title();
         String bookAuthor = faker.book().author();
 
-        String template = "This is %s\n" +
-                "I work at %s\n" +
-                "I live at %s in %s %s\n" +
-                "My favorite book is %s by %s\n";
-
-        return template.formatted(
-                name,
-                company,
-                street,
-                city,
-                state,
-                bookTitle,
-                bookAuthor
-        );
+        return new Person(name, company, new Address(street, city, state, null), new Book(bookTitle, bookAuthor));
     }
 }
