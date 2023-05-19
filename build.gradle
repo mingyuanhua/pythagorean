@@ -19,6 +19,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     implementation 'com.github.javafaker:javafaker:1.0.2' // library can generate dummy data
+    implementation 'org.springframework.boot:spring-boot-start-data-jdbc'
+    runtimeOnly 'org.postgresql:postgresql:42.6.0'
 }
 
 tasks.named('test') {
