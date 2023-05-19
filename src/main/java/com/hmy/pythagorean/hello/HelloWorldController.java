@@ -14,6 +14,7 @@ public class HelloWorldController {
         if (locale == null) {
             locale = "en_US";
         }
+
         Faker faker = new Faker(new Locale(locale));
         String name = faker.name().fullName();
         String company = faker.company().name();
