@@ -13,3 +13,4 @@ public record CustomerEntity(
         String lastName
 ) {
 }
+

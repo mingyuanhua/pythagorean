@@ -10,3 +10,4 @@ public record CartEntity(
         Double totalPrice
 ) {
 }
+

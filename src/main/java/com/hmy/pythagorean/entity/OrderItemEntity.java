@@ -12,3 +12,4 @@ public record OrderItemEntity(
         Integer quantity
 ) {
 }
+

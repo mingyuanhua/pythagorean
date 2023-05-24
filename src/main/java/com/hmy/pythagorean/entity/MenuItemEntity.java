@@ -9,7 +9,8 @@ public record MenuItemEntity(
         Long restaurantId,
         String name,
         String description,
-        String price,
+        Double price,
         String imageUrl
 ) {
 }
+

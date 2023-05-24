@@ -12,3 +12,4 @@ public record RestaurantEntity(
         String imageUrl
 ) {
 }
+
