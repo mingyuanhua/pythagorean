@@ -1,0 +1,82 @@
+package com.hmy.pythagorean.service;
+
+import com.hmy.pythagorean.entity.CartEntity;
+import com.hmy.pythagorean.entity.MenuItemEntity;
+import com.hmy.pythagorean.entity.OrderItemEntity;
+import com.hmy.pythagorean.model.CartDto;
+import com.hmy.pythagorean.model.OrderItemDto;
+import com.hmy.pythagorean.repository.CartRepository;
+import com.hmy.pythagorean.repository.MenuItemRepository;
+import com.hmy.pythagorean.repository.OrderItemRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
+@Service
+public class CartService {
+    private final CartRepository cartRepository;
+    private final MenuItemRepository menuItemRepository;
+    private final OrderItemRepository orderItemRepository;
+
+    public CartService(CartRepository cartRepository, MenuItemRepository menuItemRepository, OrderItemRepository orderItemRepository) {
+        this.cartRepository = cartRepository;
+        this.menuItemRepository = menuItemRepository;
+        this.orderItemRepository = orderItemRepository;
+    }
+
+    @Transactional
+    public void addMenuItemToCart(long customerId, long menuItemId) {
+        CartEntity cart = cartRepository.getByCustomerId(customerId);
+        MenuItemEntity menuItem = menuItemRepository.findById(menuItemId).get();
+        OrderItemEntity orderItem = orderItemRepository.findByCartIdAndMenuItemId(cart.id(), menuItem.id());
+
+        Long orderItemId;
+        int quantity;
+
+        if (orderItem == null) {
+            orderItemId = null;
+            quantity = 1;
+        } else {
+            orderItemId = orderItem.id();
+            quantity = orderItem.quantity() + 1;
+        }
+
+        OrderItemEntity newOrderItem = new OrderItemEntity(orderItemId, menuItemId, cart.id(), menuItem.price(), quantity);
+        orderItemRepository.save(newOrderItem);
+        cartRepository.updateTotalPrice(cart.id(), cart.totalPrice() + menuItem.price());
+    }
+
+    @Transactional
+    public void clearCart(Long customerId) {
+        CartEntity cartEntity = cartRepository.getByCustomerId(customerId);
+        orderItemRepository.deleteByCardId(cartEntity.id());
+        cartRepository.updateTotalPrice(cartEntity.id(), 0.0);
+    }
+
+    public CartDto getCart(Long customerId) {
+        CartEntity cart = cartRepository.getByCustomerId(customerId);
+        List<OrderItemEntity> orderItems = orderItemRepository.getAllByCartId(cart.id());
+        List<OrderItemDto> orderItemDtos = getOrderItemDtos(orderItems);
+        return new CartDto(cart, orderItemDtos);
+    }
+
+    private List<OrderItemDto> getOrderItemDtos(List<OrderItemEntity> orderItems) {
+        Set<Long> menuItemIds = new HashSet<>();
+        for (OrderItemEntity orderItem : orderItems) {
+            menuItemIds.add(orderItem.menuItemId());
+        }
+        List<MenuItemEntity> menuItems = menuItemRepository.findAllById(menuItemIds);
+        Map<Long, MenuItemEntity> menuItemMap = new HashMap<>();
+        for (MenuItemEntity menuItem : menuItems) {
+            menuItemMap.put(menuItem.id(), menuItem);
+        }
+        List<OrderItemDto> orderItemDtos = new ArrayList<>();
+        for (OrderItemEntity orderItem : orderItems) {
+            MenuItemEntity menuItem = menuItemMap.get(orderItem.menuItemId());
+            OrderItemDto orderItemDto = new OrderItemDto(orderItem, menuItem);
+            orderItemDtos.add(orderItemDto);
+        }
+        return  orderItemDtos;
+    }
+}
