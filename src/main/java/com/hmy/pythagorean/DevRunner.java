@@ -122,7 +122,7 @@ public class DevRunner implements ApplicationRunner {
 
         cartService.clearCart(1L);
 
-
+        // logger.info provide sufficient information, or even print in AWS Cloudwatch
         logger.info(cartService.getCart(1L).toString());
     }
 }

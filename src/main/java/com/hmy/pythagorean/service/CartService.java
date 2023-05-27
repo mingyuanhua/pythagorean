@@ -25,6 +25,7 @@ public class CartService {
         this.orderItemRepository = orderItemRepository;
     }
 
+    // only commit db if all transactions are successful
     @Transactional
     public void addMenuItemToCart(long customerId, long menuItemId) {
         CartEntity cart = cartRepository.getByCustomerId(customerId);
