@@ -55,7 +55,7 @@ public class CartService {
     @Transactional
     public void clearCart(Long customerId) {
         CartEntity cartEntity = cartRepository.getByCustomerId(customerId);
-        orderItemRepository.deleteByCardId(cartEntity.id());
+        orderItemRepository.deleteByCartId(cartEntity.id());
         cartRepository.updateTotalPrice(cartEntity.id(), 0.0);
     }
 

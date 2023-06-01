@@ -14,5 +14,5 @@ public interface OrderItemRepository extends ListCrudRepository<OrderItemEntity,
 
     @Modifying
     @Query("DELETE FROM order_items WHERE cart_id = :cartId")
-    void deleteByCardId(Long cartId);
+    void deleteByCartId(Long cartId);
 }
