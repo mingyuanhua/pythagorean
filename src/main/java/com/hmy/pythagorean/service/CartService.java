@@ -8,6 +8,8 @@ import com.hmy.pythagorean.model.OrderItemDto;
 import com.hmy.pythagorean.repository.CartRepository;
 import com.hmy.pythagorean.repository.MenuItemRepository;
 import com.hmy.pythagorean.repository.OrderItemRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class CartService {
         this.orderItemRepository = orderItemRepository;
     }
 
+    @CacheEvict(cacheNames = "cart", key = "#customerId")
     // only commit db if all transactions are successful
     @Transactional
     public void addMenuItemToCart(long customerId, long menuItemId) {
@@ -48,6 +51,7 @@ public class CartService {
         cartRepository.updateTotalPrice(cart.id(), cart.totalPrice() + menuItem.price());
     }
 
+    @CacheEvict(cacheNames = "cart")
     @Transactional
     public void clearCart(Long customerId) {
         CartEntity cartEntity = cartRepository.getByCustomerId(customerId);
@@ -55,6 +59,7 @@ public class CartService {
         cartRepository.updateTotalPrice(cartEntity.id(), 0.0);
     }
 
+    @Cacheable("cart")
     public CartDto getCart(Long customerId) {
         CartEntity cart = cartRepository.getByCustomerId(customerId);
         List<OrderItemEntity> orderItems = orderItemRepository.getAllByCartId(cart.id());

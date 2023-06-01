@@ -6,6 +6,7 @@ import com.hmy.pythagorean.model.MenuItemDto;
 import com.hmy.pythagorean.model.RestaurantDto;
 import com.hmy.pythagorean.repository.MenuItemRepository;
 import com.hmy.pythagorean.repository.RestaurantRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class RestaurantService {
         this.menuItemRepository = menuItemRepository;
     }
 
+    @Cacheable("restaurants")
     public List<RestaurantDto> getRestaurants() {
         List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
         List<MenuItemEntity> menuItemEntities = menuItemRepository.findAll();
